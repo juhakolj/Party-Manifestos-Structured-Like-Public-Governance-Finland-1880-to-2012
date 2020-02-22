@@ -1,0 +1,46 @@
+# Party Manifestos Structured Like Public Governance, Finland, 1880 to 2012 Computational Content Analysis Using Topic Modeling with Fine-tuning
+# Pertti Ahonen, Juha Koljonen, Mikko Mattila and Matti Nelimarkka
+# Online appendix software information 
+# Topic optimization code
+# Comments added and code sligthly edited 22.02.2020
+
+###
+
+# load packages
+library(ldatuning)
+library(topicmodels)
+library(NLP)
+library(tm)
+
+# load documents from directory
+directory<-"XXX"
+textcorpus<-VCorpus(DirSource(directory,encoding = "UTF-8"), readerControl = list(language = "fi"))
+
+# extract file names
+docnames<-list.files(directory)
+for (i in 1:length(textcorpus)){ meta(textcorpus[[i]], tag = "author") <-docnames[i] }
+
+# preprocess text and generate text document matrix 
+text.corpus.format<-textcorpus
+text.corpus.format<-tm_map(text.corpus.format,content_transformer(tolower)) # MAKES EVERYTHING LOWERCASE
+text.corpus.format<-tm_map(text.corpus.format,removeNumbers) # REMOVE NUMBERS
+text.corpus.format<-tm_map(text.corpus.format,stripWhitespace) # REMOVE EXTRA WHITE SPACE
+text.corpus.format<-tm_map(text.corpus.format,content_transformer(removePunctuation))
+text.corpus.format<-tm_map(text.corpus.format,removeWords,stopwords("finnish") )
+text.corpus.format<-tm_map(text.corpus.format,removeWords,c("myödä", "kehiä", "tau", "myös", "tulla", "kuu", "tehdä", "voida", "kui") )
+wordfreqmatrix_raw <-DocumentTermMatrix(text.corpus.format)
+
+# topic number optimization
+result <- FindTopicsNumber(
+  wordfreqmatrix,
+  topics = seq(from = 5, to = 150, by = 5),
+  metrics = c("Griffiths2004", "CaoJuan2009", "Arun2010", "Deveaud2014"),
+  method = "Gibbs",
+  control = list(seed = 77),
+  mc.cores = 2L,
+  verbose = TRUE
+)
+
+# result print out
+write.table(result, file = "ldatuning_topics_analysis.csv")
+FindTopicsNumber_plot(result)

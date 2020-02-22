@@ -1,0 +1,74 @@
+# Party Manifestos Structured Like Public Governance, Finland, 1880 to 2012 Computational Content Analysis Using Topic Modeling with Fine-tuning
+# Pertti Ahonen, Juha Koljonen, Mikko Mattila and Matti Nelimarkka
+# Online appendix software information 
+# LDA topic modeling code used
+# Comments added and code sligthly edited 22.02.2020
+
+###
+
+# load packages
+library(topicmodels)
+library(NLP)
+library(tm)
+
+
+# load documents from directory
+directory<-"XXX"
+textcorpus<-VCorpus(DirSource(directory,encoding = "UTF-8"), readerControl = list(language = "fi"))
+
+# extract file names
+docnames<-list.files(directory)
+for (i in 1:length(textcorpus)){ meta(textcorpus[[i]], tag = "author") <-docnames[i] }
+
+# preprocess text and generate text document matrix 
+text.corpus.format<-textcorpus
+text.corpus.format<-tm_map(text.corpus.format,content_transformer(tolower)) 
+text.corpus.format<-tm_map(text.corpus.format,removeNumbers) 
+text.corpus.format<-tm_map(text.corpus.format,stripWhitespace) 
+text.corpus.format<-tm_map(text.corpus.format,content_transformer(removePunctuation))
+text.corpus.format<-tm_map(text.corpus.format,removeWords,stopwords("finnish") )
+text.corpus.format<-tm_map(text.corpus.format,removeWords,c("myödä", "kehiä", "tau", "myös", "tulla", "kuu", "tehdä", "voida", "kui") )
+wordfreqmatrix <-DocumentTermMatrix(text.corpus.format)
+
+# settings for LDA
+
+ burnin <- 4000
+ iter <- 2000
+ thin <- 500
+ nstart <- 5
+ best <- TRUE
+
+# seeds used in each topic modeling round
+
+# a
+# seed <-list(2003,5,63,100001,765)
+ 
+# b
+# seed <-list(2018,2,23,31243,226)
+ 
+# c
+# seed <-list(1982,6,45,1246,567)
+ 
+# d
+# seed <-list(1666,9,12,6786,235)
+ 
+# e
+# seed <-list(2020,7,49,23423,854)
+ 
+ 
+# number of topics
+# topic numbers 40, 55 and 75 were used
+k <- XX
+
+# topic modeling
+ldaOut <-LDA(wordfreqmatrix,k, method="Gibbs", control=list(nstart=nstart, seed = seed, best=best, burnin = burnin, iter = iter, thin=thin))
+
+# printouts
+ldaOut.topics <- as.matrix(topics(ldaOut))
+write.csv(ldaOut.topics,file=paste("LDAGibbs",k,"DocsToTopics.csv"))
+
+ldaOut.terms <- as.matrix(terms(ldaOut,15))
+write.csv(ldaOut.terms,file=paste("LDAGibbs",k,"TopicsToTerms.csv"))
+
+topicProbabilities <- as.data.frame(ldaOut@gamma)
+write.csv(topicProbabilities,file=paste("LDAGibbs",k,"TopicProbabilities.csv"))
