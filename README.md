@@ -1,0 +1,1 @@
+# Party-Manifestos-Structured-Like-Public-Governance-Finland-1880-to-2012
