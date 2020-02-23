@@ -21,3 +21,5 @@ This step was done manually with Microsoft excel.
 
 This step was done manually with Microsoft excel.
 
+R Version used to run the code was 3.4.0.
+
