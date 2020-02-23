@@ -1,4 +1,9 @@
 ## Party-Manifestos-Structured-Like-Public-Governance-Finland-1880-to-2012
+
+Pertti Ahonen, Juha Koljonen, Mikko Mattila, and Matti Nelimarkka
+
+University of Helsinki, Helsinki, Finland
+
 ### Data Availability
 Party programs used can be found from file *party_programs_lemmatized.zip*
 
